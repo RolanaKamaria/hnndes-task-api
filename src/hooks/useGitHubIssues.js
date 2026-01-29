@@ -10,9 +10,9 @@ export function useGitHubIssues() {
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
-  const [stateFilter, setStateFilter] = useState("open");
-  const [sort, setSort] = useState("created");
-  const [direction, setDirection] = useState("desc");
+  const [stateFilter, setStateFilter] = useState("");
+  const [sort, setSort] = useState("");
+  const [direction, setDirection] = useState("");
 
   const fetchIssues = async () => {
     setLoading(true);
@@ -23,7 +23,7 @@ export function useGitHubIssues() {
 
       if (searchTerm.trim()) {
         url = `https://api.github.com/search/issues?q=${encodeURIComponent(
-          `${searchTerm} repo:${REPO} state:${stateFilter}`
+          `${searchTerm} repo:${REPO} state:${stateFilter}`,
         )}&per_page=${PER_PAGE}&page=${page}&sort=${sort}&order=${direction}`;
       }
 

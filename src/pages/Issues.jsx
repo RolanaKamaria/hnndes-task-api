@@ -2,6 +2,89 @@ import { useGitHubIssues } from "../hooks/useGitHubIssues";
 import IssueCard from "../components/IssueCard";
 import Pagination from "../components/Pagination";
 import LoadingSkeleton from "../components/LoadingSkeleton";
+import { ChevronDown } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+
+function CustomSelect({
+  value,
+  onChange,
+  options,
+  placeholder = "Select...",
+  className = "",
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const wrapperRef = useRef(null);
+
+  const selected = options.find((opt) => opt.value === value);
+  const display = selected ? selected.label : placeholder;
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
+
+  return (
+    <div className={`relative ${className}`} ref={wrapperRef}>
+      <button
+        type="button"
+        onClick={() => setIsOpen((prev) => !prev)}
+        className={`
+          w-full px-5 py-3.5 glass rounded-xl border border-[hsl(var(--border))]
+          flex items-center justify-between
+          text-left hover:border-[hsl(var(--accent))/0.6] transition-colors
+          focus:outline-none focus:border-[hsl(var(--accent))]
+        `}
+      >
+        <span className={value ? "" : "text-[hsl(var(--muted))]"}>
+          {display}
+        </span>
+        <ChevronDown
+          size={18}
+          className={`transition-transform ${isOpen ? "rotate-180" : ""}`}
+        />
+      </button>
+
+      {isOpen && (
+        <div
+          className={`
+            absolute top-full left-0 mt-2 w-full
+            glass rounded-xl border border-[hsl(var(--border))]
+            shadow-xl z-20 overflow-hidden py-1.5 
+            max-h-[min(320px,calc(100vh-180px))] overflow-y-auto
+          `}
+        >
+          {options.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => {
+                onChange(opt.value);
+                setIsOpen(false);
+              }}
+              className={`
+                w-full px-5 py-2 text-left
+                hover:bg-blue-200 transition-colors
+   
+              `}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function Issues() {
   const {
@@ -22,11 +105,28 @@ export default function Issues() {
     setDirection,
   } = useGitHubIssues();
 
+  const stateOptions = [
+    { value: "open", label: "Open" },
+    { value: "closed", label: "Closed" },
+    { value: "all", label: "All" },
+  ];
+
+  const sortOptions = [
+    { value: "created", label: "Created" },
+    { value: "updated", label: "Updated" },
+    { value: "comments", label: "Comments" },
+  ];
+
+  const directionOptions = [
+    { value: "desc", label: "Newest ↓" },
+    { value: "asc", label: "Oldest ↑" },
+  ];
+
   return (
     <div className="min-h-screen flex flex-col">
       <header className="sticky top-0 z-30 border-b border-[hsl(var(--border)/0.4)] bg-[hsl(var(--surface)/0.6)] backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-5 sm:px-8 py-5 flex items-center justify-between">
-          <h1 className="text-3xl font-extrabold tracking-tight text-blue-600 ">
+          <h1 className="text-3xl font-extrabold tracking-tight text-blue-600">
             React Issues
           </h1>
         </div>
@@ -42,34 +142,26 @@ export default function Issues() {
             className="flex-1 px-5 py-3.5 glass rounded-xl border border-[hsl(var(--border))] focus:outline-none focus:border-[hsl(var(--accent))] placeholder-[hsl(var(--muted))]"
           />
 
-          <select
+          <CustomSelect
             value={stateFilter}
-            onChange={(e) => setStateFilter(e.target.value)}
-            className="px-5 py-3.5 glass rounded-xl border border-[hsl(var(--border))]"
-          >
-            <option value="open">Open</option>
-            <option value="closed">Closed</option>
-            <option value="all">All</option>
-          </select>
+            onChange={setStateFilter}
+            options={stateOptions}
+            placeholder="All"
+          />
 
-          <select
+          <CustomSelect
             value={sort}
-            onChange={(e) => setSort(e.target.value)}
-            className="px-5 py-3.5 glass rounded-xl border border-[hsl(var(--border))]"
-          >
-            <option value="created">Created</option>
-            <option value="updated">Updated</option>
-            <option value="comments">Comments</option>
-          </select>
+            onChange={setSort}
+            options={sortOptions}
+            placeholder="Sort by"
+          />
 
-          <select
+          <CustomSelect
             value={direction}
-            onChange={(e) => setDirection(e.target.value)}
-            className="px-5 py-3.5 glass rounded-xl border border-[hsl(var(--border))]"
-          >
-            <option value="desc">Newest ↓</option>
-            <option value="asc">Oldest ↑</option>
-          </select>
+            onChange={setDirection}
+            options={directionOptions}
+            placeholder="Order"
+          />
         </div>
 
         {loading ? (
