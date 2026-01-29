@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+
+:root {
+  --bg: 220 60% 98%;
+  --surface: 0 0% 100%;
+  --foreground: 220 35% 18%;
+  --muted: 220 15% 45%;
+  --border: 220 20% 92%;
+  --primary: 243 75% 62%;
+  --accent: 262 80% 60%;
+}
+
+body {
+  @apply bg-[hsl(var(--bg))] text-[hsl(var(--foreground))] min-h-screen antialiased;
+  font-feature-settings: "cv03", "cv04", "ss01";
+}
+
+.glass {
+  background: var(--glass, rgba(255, 255, 255, 0.55));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 8px 32px rgba(31, 38, 68, 0.07);
+}
+
+.glass:hover {
+  background: rgba(255, 255, 255, 0.65);
+  box-shadow: 0 12px 40px rgba(31, 38, 68, 0.1);
+}
+
+.prose {
+  color: hsl(var(--foreground));
+  max-width: none;
+}
+
+.prose :where(code):not(:where([class~="not-prose"] *)) {
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--primary);
+}
