@@ -57,13 +57,14 @@ function CustomSelect({
       {isOpen && (
         <div
           className={`
-            absolute top-full left-0 mt-2 w-full
-            glass rounded-xl border border-[hsl(var(--border))]
-            shadow-xl z-20 overflow-hidden py-1.5 
+            absolute top-full left-0 mt-2 w-full 
+             rounded-xl border border-[hsl(var(--border))]
+            shadow-xl z-20 overflow-hidden py-1.5 bg-white 
             max-h-[min(320px,calc(100vh-180px))] overflow-y-auto
           `}
         >
           {options.map((opt) => (
+
             <button
               key={opt.value}
               type="button"
@@ -73,7 +74,7 @@ function CustomSelect({
               }}
               className={`
                 w-full px-5 py-2 text-left
-                hover:bg-blue-200 transition-colors
+                hover:bg-[hsl(var(--accent)/0.12)] transition-colors
    
               `}
             >
@@ -175,12 +176,12 @@ export default function Issues() {
             No issues found with current filters
           </div>
         ) : (
-          <div className="grid gap-6 md:gap-7">
-            {issues.map((issue) => (
-              <IssueCard key={issue.id} issue={issue} />
-            ))}
-          </div>
-        )}
+                <div className="grid gap-6 md:gap-7">
+                  {issues.map((issue) => (
+                    <IssueCard key={issue.id} issue={issue} />
+                  ))}
+                </div>
+              )}
 
         {totalCount > perPage && !loading && (
           <Pagination
